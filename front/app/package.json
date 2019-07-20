@@ -1,0 +1,33 @@
+{
+  "name": "hypertube",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "npm install && vue-cli-service serve --host '0.0.0.0' --port 3000",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.18",
+    "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@fortawesome/vue-fontawesome": "^0.1.6",
+    "axios": "^0.18.0",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.0-rc.19",
+    "core-js": "^2.6.5",
+    "jquery": "^1.9.1",
+    "vee-validate": "^2.2.10",
+    "vue": "^2.6.10",
+    "vue-axios": "^2.1.4",
+    "vue-cookie": "^1.1.4",
+    "vue-router": "^3.0.3",
+    "vue-video-player": "^5.0.2",
+    "vuex": "^3.0.1",
+    "vuex-persist": "^2.0.0",
+    "vuex-shared-mutations": "^1.0.2"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^3.7.0",
+    "vue-template-compiler": "^2.5.21"
+  }
+}

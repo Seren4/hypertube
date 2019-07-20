@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+            integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <img class="img-fluid" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1zXo_-T3w_HSA-n_Lvo_0UclVePUmCY2YO_7UQL-12L4aKqI-">
+        </div>
+        <div class="col-8">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <span style="top: 100px">Movies in database: <span id="current_db">0</span></span> </br>
+            <span class="btn btn-info" id="refresh_db">Refresh</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div>
+                <h3><span class="badge badge-secondary">Pop Corn Time</span></h3>
+                <button class="btn btn-info" id="start-pc"> Start task </button>
+                <div id="pc_spin" class="spinner-border text-secondary" role="status"></div>
+                </br>
+                <span >Total movies: <span id="current_pc">0</span> / {{pc.count}}</span>
+                <span id="pc_time_span"> </br> Finished in <span id="time_pc">0</span></span>
+            </div>
+            <div id="pop_corn-bar"></div>
+        </div>
+        <div class="col-12">
+            <div>
+                <h3><span class="badge badge-secondary">The Movie DB</span></h3>
+                <button class="btn btn-info" id="start-tmdb"> Start task </button>
+                <div id="tmdb_spin" class="spinner-border text-secondary" role="status"></div>
+                </br>
+                <span >Total movies: <span id="current_tmdb">0</span> / {{tmdb.count}}</span>
+                <span id="tmdb_time_span"> </br> Finished in <span id="time_tmdb">0</span></span>
+
+            </div>
+            <div id="tmdb-bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $( document ).ready(function(){
+
+        $( function() {
+            $( "#yts_time_span" ).hide();
+            $( "#yts_spin" ).hide();
+            $( "#pc_time_span" ).hide();
+            $( "#pc_spin" ).hide();
+            $( "#tmdb_time_span" ).hide();
+            $( "#tmdb_spin" ).hide();
+
+            $( "#yts-bar" ).progressbar({
+                value: 0
+            });
+            $( "#pop_corn-bar" ).progressbar({
+                value: 0
+            });
+            $( "#tmdb-bar" ).progressbar({
+                value: 0
+            });
+            $.ajax({
+                url : '/total',
+                type : 'GET',
+                success : function(data, statut){
+                    $("#current_db").text(data)
+                }
+            });
+        });
+
+        $("#start-yts").on('click', function () {
+            $("#start-yts").attr("disabled", true);
+            $( "#yts_spin" ).show();
+            $.ajax({
+                url : 'yts?nb_page={{yts.max_page}}',
+                type : 'GET',
+                success : function(data, statut){
+                    $( "#time_yts" ).text(data);
+                    $( "#yts_time_span" ).show();
+                    $( "#yts_spin" ).hide();
+                    $("#start-yts").attr("disabled", false);
+                }
+            });
+        });
+
+
+        $("#start-pc").on('click', function () {
+            $("#start-pc").attr("disabled", true);
+            $( "#pc_spin" ).show();
+            $.ajax({
+                url : 'pc?nb_page={{pc.max_page}}',
+                type : 'GET',
+                success : function(data, statut){
+                    $( "#time_pc" ).text(data);
+                    $( "#pc_time_span" ).show();
+                    $( "#pc_spin" ).hide();
+                    $("#start-pc").attr("disabled", false);
+                }
+            });
+        });
+        $("#start-tmdb").on('click', function () {
+            $("#start-tmdb").attr("disabled", true);
+            $( "#tmdb_spin" ).show();
+            $.ajax({
+                url : 'tmdb?nb_page={{tmdb.max_page}}',
+                type : 'GET',
+                success : function(data, statut){
+                    $( "#time_tmdb" ).text(data);
+                    $( "#tmdb_time_span" ).show();
+                    $( "#tmdb_spin" ).hide();
+                    $("#start-tmdb").attr("disabled", false);
+                }
+            });
+        });
+        $("#refresh_db").on('click', function () {
+            $.ajax({
+                url : '/total',
+                type : 'GET',
+                success : function(data, statut){
+                    $("#current_db").text(data)
+                }
+            });
+        });
+
+        var source = new EventSource("{{ url_for('sse.stream') }}");
+
+        source.addEventListener('prct_yts', function(event) {
+            var data = JSON.parse(event.data);
+            $( "#yts-bar" ).progressbar({
+                value: parseFloat(data.message)
+            });
+        }, false);
+
+        source.addEventListener('current_yts', function(event) {
+            var data = JSON.parse(event.data);
+            $( "#current_yts" ).text(data.message);
+        }, false);
+
+        source.addEventListener('prct_pc', function(event) {
+            var data = JSON.parse(event.data);
+
+            $( "#pop_corn-bar" ).progressbar({
+                value: parseFloat(data.message, 10)
+            });
+        }, false);
+
+        source.addEventListener('current_pc', function(event) {
+            var data = JSON.parse(event.data);
+            $( "#current_pc" ).text(data.message);
+        }, false);
+
+
+        source.addEventListener('prct_tmdb', function(event) {
+            var data = JSON.parse(event.data);
+
+            $( "#tmdb-bar" ).progressbar({
+                value: parseFloat(data.message, 10)
+            });
+        }, false);
+
+        source.addEventListener('current_tmdb', function(event) {
+            var data = JSON.parse(event.data);
+            $( "#current_tmdb" ).text(data.message);
+        }, false);
+
+        source.addEventListener('error', function(event) {
+            console.log("Failed to connect to event stream. Is Redis running?");
+        }, false);
+
+
+    });
+</script>
+
+</body>
+</html>

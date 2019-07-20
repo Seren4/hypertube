@@ -1,0 +1,65 @@
+version: "2"
+
+services:
+  db:
+     image: mysql:5.7
+     volumes:
+       - ./database:/var/lib/mysql
+     environment:
+       MYSQL_ROOT_PASSWORD: rootpass
+       MYSQL_DATABASE: hypertube
+       MYSQL_USER: devuser
+       MYSQL_PASSWORD: devpass
+     ports:
+      - "3306:3306"
+     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+  phpmyadmin:
+     image: phpmyadmin/phpmyadmin
+     ports:
+       - "8081:80"
+     links:
+       - db
+     environment:
+       - PMA_HOST=db
+  populate:
+    build: ./populate
+    volumes:
+      - ./populate/app/:/app
+    working_dir: /app
+    links:
+      - db
+      - redis
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: always
+  back:
+    build: ./back
+    volumes:
+      - ./back/app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - populate
+  front:
+    build: ./front
+    volumes:
+      - ./front/app:/app
+    ports:
+      - "3000:3000"
+  video:
+    build: ./video
+    volumes:
+      - ./video/app:/go/src/video
+    working_dir: /go/src/video
+    links:
+      - db
+    ports:
+      - "8082:8082"
+      - "50007:50007"
